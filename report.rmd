@@ -1,0 +1,82 @@
+---
+title: 'Coursera Data Science Specialisation: Regression Models Course Project'
+author: "Danny Chan"
+date: "April 2015"
+output: html_document
+---
+
+# Executive Summary
+
+# Context
+Motor Trend, a magazine about the automobile industry are interested in exploring the relationship between a set of variables and miles per gallon (MPG) (outcome). They are particularly interested in the following two questions:
+
+* “Is an automatic or manual transmission better for MPG”
+* "Quantify the MPG difference between automatic and manual transmissions"
+
+This report will explore these two questions by conducting:
+
+1. Exploratory Data Analysis & Statistical Inference; and
+2. Regression Analysis.
+
+# Exploratory Data Analysis & Statistical Inference
+After loading in the dataset `mtcars`, let us first note what variables the dataset contains, and what they measure by using R's handy `?mtcars` help function.
+
+Variable name   | Data Type     | Definition
+:-------------- | :-------------| :-------------
+mpg             | numeric       | Miles/(US) gallon   
+cyl             | numeric       | Number of cylinders
+disp            | numeric       | Displacement (cu. in.)
+hp              | numeric       | Gross horsepower
+drat            | numeric       | Rear axle ratio
+wt              | numeric       | Weight (lb / 1000)
+qsec            | numeric       | 1/4 mile time
+vs              | numeric       | V/S
+am              | numeric       | Transmission (0 = automatic, 1 = manual)
+gear            | numeric       | Number of forward gears
+carb            | numeric       | Number of carburetors
+
+
+
+```{r, echo = FALSE, warning = FALSE}
+library(ggplot2)
+dB <- mtcars
+g <- ggplot(dB, aes(factor(am), mpg, fill = factor(am)))
+g <- g + geom_boxplot()
+g <- g + geom_jitter(position = position_jitter(width = .1, height = 0))
+g <- g + scale_colour_discrete(name = "Type")
+g <- g + scale_fill_discrete(name = "Type", breaks = c("0", "1"), labels = c("Automatic", "Manual"))
+g <- g + scale_x_discrete(breaks = c("0", "1"), labels = c("Automatic", "Manual"))
+g <- g + xlab("")
+g
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Regression Analysis
+
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r, echo = FALSE, message = FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
