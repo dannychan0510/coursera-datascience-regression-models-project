@@ -3,6 +3,7 @@ title: 'Coursera Data Science Specialisation: Regression Models Course Project'
 author: "Danny Chan"
 date: "April 2015"
 output:
+  pdf_document: default
   html_document: default
 ---
 
@@ -14,19 +15,8 @@ We use the `mtcars` dataset from R to explore two questions, namely:
 
 We use data visualisation, hypothesis testing and regression analysis to shed light into these two questions. Our anlaysis shows us that:
 
-* Manul transmission is better for MPG;
+* Manual transmission is better for MPG;
 * Cars with manual transmission have a MPG of 2.9 units higher than the MPG of cars with automatic transmission.
-
-# Context
-Motor Trend, a magazine about the automobile industry are interested in exploring the relationship between a set of variables and miles per gallon (MPG) (outcome). They are particularly interested in the following two questions:
-
-* “Is an automatic or manual transmission better for MPG”
-* "Quantify the MPG difference between automatic and manual transmissions"
-
-This report will explore these two questions by conducting:
-
-1. Exploratory Data Analysis & Statistical Inference; and
-2. Regression Analysis.
 
 # 1. Exploratory Data Analysis & Statistical Inference
 After loading in the dataset `mtcars`, let us first note what variables the dataset contains, and what they measure by using R's handy `?mtcars` help function.
@@ -47,7 +37,7 @@ carb            | numeric       | Number of carburetors
 
 Now that we know what the variables mean, let's check out whether the mean of mpg varies by am. We can do a box plot using the very useful `ggplot2` library.
 
-```{r, warning = FALSE}
+```{r, warning = FALSE, echo = FALSE}
 library(ggplot2)
 dB <- mtcars
 g <- ggplot(dB, aes(factor(am), mpg, fill = factor(am)))
@@ -118,6 +108,20 @@ A quick `anova` test shows us that the base model and the model estimated using 
 ```{r, warning = FALSE}
 anova(base_model, step_model)
 ```
+
+## Residuals and Diagnostics
+In this section, we shall study the residual plots of our regression model.
+
+```{r, warning = FALSE, fig.width = 6, fig.height = 6}
+par(mfrow = c(2, 2))
+plot(step_model)
+```
+
+From the above plots, the following observations can be made:
+
+* The points in the Residuals vs. Fitted plot seem to be randomly scattered on the plot, which verifies the independence condition.
+* The Normal Q-Q plot consists of the points which mostly fall on the line indicating that the residuals are normally distributed.
+* The Scale-Location plot consists of points scattered in a constant band pattern, indicating constant variance.
 
 # Conclusion
 Through the use of data visualisation, hypothesis testing and regression analysis, our analysis shows us that:

@@ -48,3 +48,7 @@ summary(model)
 
 # Anova test
 anova(base_model, step_model)
+
+# Residuals plot
+par(mfrow = c(2, 2))
+plot(step_model)
