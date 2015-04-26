@@ -2,10 +2,20 @@
 title: 'Coursera Data Science Specialisation: Regression Models Course Project'
 author: "Danny Chan"
 date: "April 2015"
-output: html_document
+output:
+  html_document: default
 ---
 
 # Executive Summary
+We use the `mtcars` dataset from R to explore two questions, namely:
+
+* “Is an automatic or manual transmission better for MPG”
+* "Quantify the MPG difference between automatic and manual transmissions"
+
+We use data visualisation, hypothesis testing and regression analysis to shed light into these two questions. Our anlaysis shows us that:
+
+* Manul transmission is better for MPG;
+* Cars with manual transmission have a MPG of 2.9 units higher than the MPG of cars with automatic transmission.
 
 # Context
 Motor Trend, a magazine about the automobile industry are interested in exploring the relationship between a set of variables and miles per gallon (MPG) (outcome). They are particularly interested in the following two questions:
@@ -18,7 +28,7 @@ This report will explore these two questions by conducting:
 1. Exploratory Data Analysis & Statistical Inference; and
 2. Regression Analysis.
 
-# Exploratory Data Analysis & Statistical Inference
+# 1. Exploratory Data Analysis & Statistical Inference
 After loading in the dataset `mtcars`, let us first note what variables the dataset contains, and what they measure by using R's handy `?mtcars` help function.
 
 Variable name   | Data Type     | Definition
@@ -35,9 +45,9 @@ am              | numeric       | Transmission (0 = automatic, 1 = manual)
 gear            | numeric       | Number of forward gears
 carb            | numeric       | Number of carburetors
 
+Now that we know what the variables mean, let's check out whether the mean of mpg varies by am. We can do a box plot using the very useful `ggplot2` library.
 
-
-```{r, echo = FALSE, warning = FALSE}
+```{r, warning = FALSE}
 library(ggplot2)
 dB <- mtcars
 g <- ggplot(dB, aes(factor(am), mpg, fill = factor(am)))
@@ -50,33 +60,67 @@ g <- g + xlab("")
 g
 ```
 
+From the plot, it would seem that cars with manual transmissions are more efficient than cars with automatic transmissions (i.e. manual transmission cars have higher mpg on average).
 
+Let's do a formal statistical inference test, specifically a one-sided unpaired t-test, to test whether the mpg of manual transmission cars are statistically higher than the mpg of automatic transmission cars. We can use R's `t.test` function to do this.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Regression Analysis
-
-
-```{r}
-summary(cars)
+```{r, warning = FALSE}
+library(ggplot2)
+g1 <- subset(mtcars, mtcars$am==0)
+g2 <- subset(mtcars, mtcars$am==1)
+t1 <- t.test(g1$mpg, g2$mpg, alternative="less", paired=F)
+t1.summary <- data.frame("p-value" = c(t1$p.value), "CI-Lower" = c(t1$conf[1]), "CI-Upper" = c(t1$conf[2]), row.names = c("Automatic vs. Manual:  "))
+round(t1.summary, 3)
 ```
 
-You can also embed plots, for example:
+The null hypothesis for the one sided unpaired t-test is that "mpg of manual transmission cars is not different than the mpg of automatic transmission cars", and the alternative hypothesis is that "mpg of manual transmission cars is greater than mpg of authomatic transmission cars". As the p-value for the one sided unpaired t-test is less than 0.05, we can reject the null hypothesis and accept the alternative hypothesis at the 95% significance level.
 
-```{r, echo = FALSE, message = FALSE}
-plot(cars)
+# 2. Regression Analysis
+In the previous section, we found through visualising the data and hypothesis testing that manual transmission cars have migher mpg than automatic transmission cars. In this section, we will use regression analysis to explore this further, and quantify the mpg difference between automatic and manual transmission cars.
+
+## Regression Analysis
+After processing the data, we build an two models:
+
+1. An initial model called `base_model` where we regress the variable `am` against `mpg`; and
+2. A second model where we initially build a modelwith all the variables as predictors, and perfom stepwise model selection to select significant predictors for the final model which is the best model. This is taken care by the `step` method which runs `lm` multiple times to build multiple regression models and select the best variables from them using both forward selection and backward elimination methods by the `AIC` algorithm.
+
+We then perform an `anova` test to compare the two models.
+
+The code for building the two models are presented below:
+
+```{r, warning = FALSE}
+base_model <- lm(data = dB, mpg ~ am)
+step_model <- step(lm(data = dB, mpg ~ .), direction = "both", trace = 0)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+The results of the base model are:
+
+```{r, warning = FALSE}
+summary(base_model)
+```
+
+The coefficient on `am` tells us that the mpg on manual transmission cars are on average 7.2 units higher than that of the mpg on automatic transmission cars.
+
+The results of the model built using `step` method are:
+
+```{r, warning = FALSE}
+summary(step_model)
+```
+
+In addition to the `am` variable, the model obtained from the `step` method computations consists of the variables `wt` and `qsec` as additional explanatory variables. The interpretation of the coefficients are:
+
+* `wt`: An increase in the car's weight by 1000lbs decreases `mpg` by 3.9 units (i.e. lighter cars have better `mpg`)
+* `qsec`: A 1 second increase in the 1/4 time increases `mpg` by 1.2 units (i.e., cars with quicker `qsec` have better `mpg`)
+* `am`: A car with manual transmission increases `mpg` by 2.9 units.
+
+A quick `anova` test shows us that the base model and the model estimated using the `step` are significantly different (o-value is smaller than 0.01, i.e. we reject the null hypothesis that the two models are identical at the 99% significance level) - i.e. the addition of the `wt` and `qsec` improves the model.
+
+```{r, warning = FALSE}
+anova(base_model, step_model)
+```
+
+# Conclusion
+Through the use of data visualisation, hypothesis testing and regression analysis, our analysis shows us that:
+
+* Manul transmission is better for MPG;
+* Cars with manual transmission have a MPG of 2.9 units higher than the MPG of cars with automatic transmission.

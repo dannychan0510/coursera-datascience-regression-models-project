@@ -39,10 +39,12 @@ t1 <- t.test(g1$mpg, g2$mpg, alternative="less", paired=F)
 t1.summary <- data.frame("p-value" = c(t1$p.value), "CI-Lower" = c(t1$conf[1]), "CI-Upper" = c(t1$conf[2]), row.names = c("Automatic vs. Manual:  "))
 round(t1.summary, 3)
 
-# Do a base model fitting for just mpg against am
-fit <- lm(mpg ~ am, data = dB)
-summary(fit)
-
 # Do a stepwise regression 
-stepfit <- step(lm(data = dB, mpg ~ .), trace = 0)
-summary(s_model)
+base_model <- lm(data = dB, mpg ~ am)
+summary(base_model)
+
+step_model <- step(lm(data = dB, mpg ~ .), direction = "both", trace = 0)
+summary(model)
+
+# Anova test
+anova(base_model, step_model)
